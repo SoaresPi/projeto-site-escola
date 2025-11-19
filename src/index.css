@@ -1,0 +1,29 @@
+* {
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+html,
+body {
+  scroll-behavior: smooth;
+}
+
+iframe {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  border: none;
+}
+
+iframe::-webkit-scrollbar {
+  display: none;
+}
+
+iframe {
+  display: block;
+  outline: none;
+  border: none;
+}
+
+@import "tailwindcss";
+@import "swiper/css";
+@import "swiper/css/effect-coverflow";
+@import "swiper/css/autoplay";
