@@ -7,20 +7,33 @@ body {
   scroll-behavior: smooth;
 }
 
+/* iframe styling */
 iframe {
   backface-visibility: hidden;
   transform: translateZ(0);
   border: none;
-}
-
-iframe::-webkit-scrollbar {
-  display: none;
-}
-
-iframe {
   display: block;
   outline: none;
-  border: none;
+}
+
+/* Seção padrão (para todas as pages) */
+.section {
+  @apply py-16 md:py-20 lg:py-24;
+}
+
+/* Container centralizado */
+.container-default {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Imagens sempre responsivas */
+img {
+  @apply max-w-full h-auto object-cover;
+}
+
+/* Corrigindo classes que estavam quebradas (ex: h20 → h-20) */
+.h20 {
+  @apply h-20;
 }
 
 @import "tailwindcss";

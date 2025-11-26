@@ -30,61 +30,34 @@ export default function InteractionBar({ project, onOpenModal }) {
   const [expanded, setExpanded] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [hearts, setHearts] = useState([]); // chuva de corações
-  const [cooldown, setCooldown] = useState(false);
   const [showLikesModal, setShowLikesModal] = useState(false);
 
   useEffect(() => {
+    setLiked(
+      !!(
+        project.likedBy &&
+        project.likedBy.find((u) => u.name === currentUser.name)
+      )
+    );
     setLikesCount((project.likedBy && project.likedBy.length) || 0);
-  }, [project.likedBy]);
+  }, [project]);
 
-  // Gera pequenos corações animados no centro (3 corações)
-  const spawnHearts = (count = 3) => {
-    const newHearts = Array.from({ length: count }).map((_, idx) => ({
-      id: Date.now() + Math.random() + idx,
-      offset: Math.random() * 120 - 60, // px horizontal offset
-      size: 18 + Math.random() * 14,
-      delay: idx * 0.08,
-    }));
-    setHearts((s) => [...s, ...newHearts]);
-    setTimeout(() => {
-      setHearts((s) =>
-        s.filter((h) => !newHearts.find((nh) => nh.id === h.id))
-      );
-    }, 1400);
-  };
-
-  const handleToggleLike = () => {
-    const willLike = !liked;
-    setLiked(willLike);
-
-    project.likedBy = project.likedBy || [];
-
-    if (willLike) {
-      // adiciona currentUser em likedBy (evita duplicata)
-      if (!project.likedBy.find((u) => u.name === currentUser.name)) {
-        project.likedBy.unshift({
-          name: currentUser.name,
-          avatar: currentUser.avatar,
-          following: false,
-        });
-      }
-      project.likes = (project.likes ?? 0) + 1;
+  const toggleLike = () => {
+    if (liked) {
+      setLiked(false);
+      setLikesCount((c) => Math.max(0, c - 1));
+    } else {
+      setLiked(true);
       setLikesCount((c) => c + 1);
 
-      // chuva + cooldown 2s
-      if (!cooldown) {
-        spawnHearts(3);
-        setCooldown(true);
-        setTimeout(() => setCooldown(false), 2000);
-      }
-    } else {
-      // remove like
-      project.likedBy = (project.likedBy || []).filter(
-        (u) => u.name !== currentUser.name
-      );
-      project.likes = Math.max((project.likes ?? 1) - 1, 0);
-      setLikesCount((c) => Math.max(c - 1, 0));
+      // gerar um coração animado
+      const id = Date.now();
+      setHearts((h) => [...h, { id }]);
+      setTimeout(() => {
+        setHearts((h) => h.filter((x) => x.id !== id));
+      }, 900);
     }
+    // nota: se quiser persistir no backend, faça a chamada aqui
   };
 
   const toggleSave = () => setSaved((s) => !s);
@@ -128,7 +101,7 @@ export default function InteractionBar({ project, onOpenModal }) {
         <div className="flex gap-3 items-center">
           {/* Heart button with scale animation */}
           <motion.button
-            onClick={handleToggleLike}
+            onClick={toggleLike}
             whileTap={{ scale: 0.9 }}
             className="flex items-center"
             aria-label="Curtir"
@@ -231,45 +204,21 @@ export default function InteractionBar({ project, onOpenModal }) {
       </div>
 
       {/* Hearts rain — centered overlay */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <div className="relative w-full h-full flex items-center justify-center">
-          <AnimatePresence>
-            {hearts.map((h) => (
-              <motion.div
-                key={h.id}
-                initial={{ y: 0, opacity: 1, scale: 0.6, x: h.offset }}
-                animate={{
-                  y: -120 - Math.random() * 60,
-                  opacity: 0,
-                  scale: 1.1,
-                }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.1, delay: h.delay, ease: "easeOut" }}
-                style={{
-                  position: "absolute",
-                  left: `calc(50% + ${h.offset}px)`,
-                }}
-              >
-                <div
-                  style={{
-                    width: h.size,
-                    height: h.size,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <span
-                    style={{ fontSize: h.size, lineHeight: 1 }}
-                    className="text-red-400 drop-shadow"
-                  >
-                    ❤️
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+      <div className="relative">
+        <AnimatePresence>
+          {hearts.map((h) => (
+            <motion.div
+              key={h.id}
+              initial={{ opacity: 0, y: 0, scale: 0.8 }}
+              animate={{ opacity: 1, y: -40, scale: 1.1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.9 }}
+              className="absolute right-0 bottom-0 pointer-events-none"
+            >
+              <span className="text-red-400 drop-shadow text-xl">❤</span>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {/* Likes modal (internal) */}

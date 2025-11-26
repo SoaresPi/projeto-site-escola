@@ -20,10 +20,12 @@ export default function Navbar() {
     { name: "Contatos", path: "/contacts" },
     // link do login muda dinamicamente
     user
-      ? user.type === "student"
-        ? { name: "Área do Aluno", path: "/student" }
-        : user.type === "teacher"
+      ? user.role === "admin"
+        ? { name: "Painel Admin", path: "/admin" }
+        : user.role === "teacher"
         ? { name: "Área do Professor", path: "/teacher" }
+        : user.role === "student"
+        ? { name: "Área do Aluno", path: "/student" }
         : { name: "Área do Responsável", path: "/guardian" }
       : { name: "Login", path: "/login" },
     {
@@ -38,9 +40,9 @@ export default function Navbar() {
 
   //Scroll
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   //Fecha dropdown quando clica p fora (desktop)
@@ -183,10 +185,12 @@ export default function Navbar() {
             <Link
               to={
                 user
-                  ? user.type === "student"
-                    ? "/student"
-                    : user.type === "teacher"
+                  ? user.role === "admin"
+                    ? "/admin"
+                    : user.role === "teacher"
                     ? "/teacher"
+                    : user.role === "student"
+                    ? "/student"
                     : "/guardian"
                   : "/login"
               }

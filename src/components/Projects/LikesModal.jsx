@@ -1,15 +1,8 @@
-// src/components/Projects/LikesModal.jsx
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useState } from "react";
 
-/**
- * LikesModal
- * props:
- * - project: projeto com campo likedBy
- * - onClose: função para fechar o modal
- */
-export default function LikesModal({ project, onClose }) {
+export default function LikesModal({ project = { likedBy: [] }, onClose }) {
   // local copy to control following state visually
   const [people, setPeople] = useState(
     (project.likedBy || []).map((p) => ({ ...p }))
@@ -17,12 +10,9 @@ export default function LikesModal({ project, onClose }) {
 
   const toggleFollow = (index) => {
     setPeople((prev) => {
-      const copy = [...prev];
-      copy[index] = { ...copy[index], following: !copy[index].following };
-      // Optionally persist to project.likedBy as well:
-      if (project.likedBy && project.likedBy[index]) {
-        project.likedBy[index].following = copy[index].following;
-      }
+      const copy = prev.map((item) => ({ ...item }));
+      copy[index].following = !copy[index].following;
+      // opcional: persistir de volta em project.likedBy (se quiser)
       return copy;
     });
   };
@@ -60,24 +50,23 @@ export default function LikesModal({ project, onClose }) {
             <div key={i} className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <img
-                  src={p.avatar}
+                  src={p.avatar || "https://via.placeholder.com/48"}
                   alt={getDisplayName(p)}
                   className="w-10 h-10 rounded-full object-cover"
                 />
                 <div>
-                  <div className="font-medium text-sm">{getDisplayName(p)}</div>
-                  <div className="text-xs text-gray-500">Curtido</div>
+                  <div className="font-medium">{getDisplayName(p)}</div>
+                  <div className="text-sm text-gray-500">
+                    {p.following ? "Seguindo" : "Não segue"}
+                  </div>
                 </div>
               </div>
-
               <div>
                 <button
                   onClick={() => toggleFollow(i)}
-                  className={`text-sm px-3 py-1 rounded-full transition ${
-                    p.following
-                      ? "bg-gray-200 text-gray-700"
-                      : "bg-blue-600 text-white"
-                  }`}
+                  className={`px-3 py-1 rounded-full ${
+                    p.following ? "bg-gray-500" : "bg-orange-500"
+                  } text-white text-sm`}
                 >
                   {p.following ? "Seguindo" : "Seguir"}
                 </button>

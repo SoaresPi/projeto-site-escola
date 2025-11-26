@@ -1,4 +1,4 @@
-import FeaturedCarousel from "../FeaturedCarousel";
+import FeaturedCarousel from "./FeaturedCarousel";
 
 export default function HighlightsSection() {
   const highlightsProjects = [

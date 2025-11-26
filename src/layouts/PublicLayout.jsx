@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LoadingScreen } from "../pages/assistant/index";
 
-export default function RootLayout() {
+export default function PublicLayout() {
   const { loading, setLoading } = useLoading();
   const location = useLocation();
 
@@ -35,7 +35,7 @@ export default function RootLayout() {
   }, [location.pathname, setLoading]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900">
+    <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900 public-wrapper">
       <LoadingScreen isVisible={loading} />
       <Navbar />
 
@@ -45,19 +45,18 @@ export default function RootLayout() {
         }`}
       >
         <AnimatePresence mode="wait">
-          {!loading && (
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-              <Outlet />
-            </motion.div>
-          )}
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <Outlet />
+          </motion.div>
         </AnimatePresence>
       </main>
+
       <Footer />
     </div>
   );
